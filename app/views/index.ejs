@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= title %></title>
+		<link href="/css/style.css" rel="stylesheet" type="text/css" />
+	</head>
+	<body>
+		<% if (!user) { %>
+			<a href="/login">Login</a>&nbsp;
+			<a href="/register">Register</a>
+		<% } else { %>
+			Hi <%= user.firstName %> <%= user.lastName %>, <a href="/logout">Logout</a>
+		<% } %>
+	</body>
+</html>
