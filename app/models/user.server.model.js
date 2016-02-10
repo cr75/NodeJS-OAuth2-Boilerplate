@@ -31,8 +31,6 @@ var UserSchema = new Schema({
         type: String,
         required: 'Provider is required'
     },
-    providerId: String,
-    providerData: {},
     created: {
         type: Date,
         default: Date.now
