@@ -1,84 +1,96 @@
 var User = require('mongoose').model('User'),
-	passport = require('passport');
+    OAuthClientsModel = require('mongoose').model('OAuthClients'),
+    passport = require('passport');
 
-var getErrorMessage = function(err){
-	var message = '';
-	if(err.code){
-		switch(err.code){
-			case 11000:
-			case 11001:
-				message = 'Username already exists';
-				break;
-			default:
-				message = 'Something went wrong';
-		}
-	}else{
-		for(var errName in err.errors){
-			if(err.errors[errName].message)
-				message = err.errors[errName].message;
-		}
-	}
-	return message;
+var getErrorMessage = function(err) {
+    var message = '';
+    if (err.code) {
+        switch (err.code) {
+            case 11000:
+            case 11001:
+                message = 'Username already exists';
+                break;
+            default:
+                message = 'Something went wrong';
+        }
+    } else {
+        for (var errName in err.errors) {
+            if (err.errors[errName].message)
+                message = err.errors[errName].message;
+        }
+    }
+    return message;
 };
 
-exports.renderLogin = function(req, res, next){
-	if(!req.user){
-		res.render('login', {
-			title : 'Login',
-			messages : req.flash('error') || req.flash('info')
-		});
-	} else{
-		return res.redirect('/');
-	}
+exports.renderLogin = function(req, res, next) {
+    if (!req.user) {
+        res.render('login', {
+            title: 'Login',
+            messages: req.flash('error') || req.flash('info')
+        });
+    } else {
+        return res.redirect('/');
+    }
 };
 
-exports.renderRegister = function(req, res, next){
-	if(!req.user){
-		res.render('register', {
-			title : 'Register',
-			messages : req.flash('error')
-		});
-	}else{
-		return res.redirect('/');
-	}
+exports.renderRegister = function(req, res, next) {
+    if (!req.user) {
+        res.render('register', {
+            title: 'Register',
+            messages: req.flash('error')
+        });
+    } else {
+        return res.redirect('/');
+    }
 };
 
-exports.register = function(req, res, next){
-	if(!req.user){
-		var user = new User(req.body);
-		var message = null;
+exports.register = function(req, res, next) {
+    if (!req.user) {
+        var user = new User(req.body);
+        var message = null;
 
-		user.provider = "local";
-		user.save(function(err){
-			if(err){
-				var message = getErrorMessage(err);
-				req.flash('error', message);
-				return res.redirect('/register');
-			}
+        user.provider = "local";
+        user.save(function(err) {
+            if (err) {
+                var message = getErrorMessage(err);
+                req.flash('error', message);
+                return res.redirect('/register');
+            }
 
-			req.login(user, function(err){
-				if(err){
-					return next(err);
-				}
-				return res.redirect('/');
-			});
-		});
-	} else{
-		return res.redirect('/');
-	}
+            req.login(user, function(err) {
+                if (err) {
+                    return next(err);
+                }
+                return res.redirect('/');
+            });
+        });
+    } else {
+        return res.redirect('/');
+    }
 };
 
-exports.logout = function(req, res){
-	req.logout();
-	res.redirect('/');
+exports.logout = function(req, res) {
+    req.logout();
+    res.redirect('/');
 };
 
-exports.requiresLogin = function(req, res, next){
-	if(!req.isAuthenticated()){
-		return res.status(401).send({
-			message : 'User is not logged in'
-		});
-	}
+exports.requiresLogin = function(req, res, next) {
+    if (!req.isAuthenticated()) {
+        return res.status(401).send({
+            message: 'User is not logged in'
+        });
+    }
 
-	next();
+    next();
+};
+
+exports.createapp = function(req, res) {
+    var client = {
+        clientId: 'maheshbose',
+        clientSecret: '1912308409123890',
+        redirectUri: 'http://localhost:3000'
+    }
+    var c = new OAuthClientsModel(client);
+    c.save();
+    res.send('saved');
 };
