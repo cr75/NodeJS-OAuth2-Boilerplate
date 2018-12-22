@@ -47,14 +47,14 @@ UserSchema.virtual('fullName').get(function() {
 
 UserSchema.pre('save', function(next) {
     if (this.password) {
-        this.salt = new Buffer(crypto.randomBytes(16).toString('base64'), 'base64');
+        this.salt = new Buffer(crypto.randomBytes(32).toString('base64'), 'base64');
         this.password = this.hashPassword(this.password);
     }
     next();
 });
 
 UserSchema.methods.hashPassword = function(password) {
-    return crypto.pbkdf2Sync(password, this.salt, 10000, 64).toString('base64');
+    return crypto.pbkdf2Sync(password, this.salt, 100000, 64, 'sha512').toString('base64');
 };
 
 UserSchema.methods.authenticate = function(password) {
